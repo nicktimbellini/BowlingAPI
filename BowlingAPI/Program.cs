@@ -16,6 +16,7 @@ builder.Services.AddCors(options =>
 // Configure database connection
 builder.Services.AddDbContext<BowlingContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IBowlerRepository, BowlerRepository>();
 
 // Add services
 builder.Services.AddControllers();

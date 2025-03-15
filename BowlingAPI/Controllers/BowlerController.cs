@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BowlingAPI.Data;
 using BowlingAPI.Models;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BowlingAPI.Controllers
@@ -11,34 +10,18 @@ namespace BowlingAPI.Controllers
     [ApiController]
     public class BowlersController : ControllerBase
     {
-        private readonly BowlingContext _context;
+        private readonly IBowlerRepository _repository;
 
-        public BowlersController(BowlingContext context)
+        public BowlersController(IBowlerRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetBowlers()
+        public async Task<ActionResult<IEnumerable<Bowler>>> GetBowlers()
         {
-            var filteredBowlers = await _context.Bowlers
-                .Include(b => b.Team)
-                .Where(b => b.Team.TeamName == "Marlins" || b.Team.TeamName == "Sharks")
-                .Select(b => new
-                {
-                    b.BowlerFirstName,
-                    b.BowlerMiddleInit,
-                    b.BowlerLastName,
-                    TeamName = b.Team.TeamName,
-                    b.BowlerAddress,
-                    b.BowlerCity,
-                    b.BowlerState,
-                    b.BowlerZip,
-                    b.BowlerPhoneNumber
-                })
-                .ToListAsync();
-
-            return Ok(filteredBowlers);
+            var bowlers = await _repository.GetBowlers();
+            return Ok(bowlers);
         }
     }
 }
